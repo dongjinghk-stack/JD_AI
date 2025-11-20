@@ -1,0 +1,5 @@
+{
+  "name": "HK SME Payroll Compliance Core",
+  "description": "A Hong Kong specific payroll engine demonstrating 713 Ordinance (ADW) compliance, MPF Industry Schemes, and IR56B tax filing for a catering SME.",
+  "requestFramePermissions": []
+}
