@@ -29,12 +29,18 @@ export const generateEmployees = (): Employee[] => {
     const role = isMonthly 
       ? (i < 3 ? EmployeeRole.Manager : EmployeeRole.Chef)
       : (i < 15 ? EmployeeRole.Waiter : EmployeeRole.Cleaner);
+    
+    const gender = i % 2 === 0 ? 'M' : 'F';
+    // Using randomuser.me portraits which are gendered and look realistic
+    // Offset index to get variety
+    const photoGender = gender === 'M' ? 'men' : 'women';
+    const photoIndex = (i * 3) % 99; 
 
     employees.push({
       id: `EMP${String(i + 1).padStart(3, '0')}`,
       hkid: generateHKID(i),
       name: `${SURNAMES[i % SURNAMES.length]} ${FIRST_NAMES[i]}`,
-      gender: i % 2 === 0 ? 'M' : 'F',
+      gender: gender,
       maritalStatus: i % 3 === 0 ? MaritalStatus.Single : MaritalStatus.Married,
       role: role,
       paymentType: isMonthly ? PaymentType.Monthly : PaymentType.Casual,
@@ -42,7 +48,7 @@ export const generateEmployees = (): Employee[] => {
       joinDate: generateDate(new Date(2020, 0, 1), new Date(2023, 11, 31)),
       mpfScheme: isMonthly ? MPFScheme.MasterTrust : MPFScheme.IndustryScheme,
       voluntaryContributionRate: Math.random() > 0.8 ? 5 : 0,
-      profilePicture: `https://i.pravatar.cc/150?u=${i}`,
+      profilePicture: `https://randomuser.me/api/portraits/${photoGender}/${photoIndex}.jpg`,
       contactNumber: generatePhoneNumber()
     });
   }
