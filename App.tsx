@@ -18,7 +18,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  Check
+  Check,
+  Trash2,
+  Edit,
+  Info
 } from 'lucide-react';
 
 // --- Custom UI Components ---
@@ -214,28 +217,42 @@ const CalendarTab: React.FC = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-        <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-          <CalendarIcon size={20} className="text-emerald-600 dark:text-emerald-400"/> 
-          Payroll Calendar
-        </h2>
-        <div className="flex items-center gap-4">
-          <button onClick={prevMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300"><ChevronLeft size={20}/></button>
-          <span className="text-lg font-medium w-32 text-center text-slate-900 dark:text-white">{monthNames[month]} {year}</span>
-          <button onClick={nextMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300"><ChevronRight size={20}/></button>
+    <div className="space-y-4">
+      <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-md border border-indigo-200 dark:border-indigo-800 text-sm">
+        <div className="flex items-start gap-2">
+          <Info className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" />
+          <div className="space-y-1">
+            <h4 className="font-bold text-indigo-900 dark:text-indigo-100">Payroll Calendar Events</h4>
+            <p className="text-xs text-indigo-800 dark:text-indigo-200">
+              Tracking key compliance dates including <strong>MPF Submission Deadlines</strong> (10th of following month), <strong>Pay Run Completion</strong> (Month End), and annual <strong>IR56B Tax Filing</strong> windows.
+            </p>
+          </div>
         </div>
       </div>
-      
-      <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="py-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {day}
+
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <CalendarIcon size={20} className="text-emerald-600 dark:text-emerald-400"/> 
+            Payroll Calendar
+          </h2>
+          <div className="flex items-center gap-4">
+            <button onClick={prevMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300"><ChevronLeft size={20}/></button>
+            <span className="text-lg font-medium w-32 text-center text-slate-900 dark:text-white">{monthNames[month]} {year}</span>
+            <button onClick={nextMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300"><ChevronRight size={20}/></button>
           </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 border-l border-slate-200 dark:border-slate-700">
-        {days}
+        </div>
+        
+        <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="py-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              {day}
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 border-l border-slate-200 dark:border-slate-700">
+          {days}
+        </div>
       </div>
     </div>
   );
@@ -262,6 +279,19 @@ const ADWTab: React.FC<{ employees: Employee[], history: PayrollRecord[] }> = ({
             onChange={setSelectedEmpId}
             label="Select Employee to Calculate ADW"
           />
+        </div>
+      </div>
+
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-md border border-emerald-200 dark:border-emerald-800 text-sm">
+        <div className="flex items-start gap-2">
+          <Info className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+          <div className="space-y-1">
+            <h4 className="font-bold text-emerald-900 dark:text-emerald-100">713 Ordinance Calculation Logic</h4>
+            <p className="text-xs text-emerald-800 dark:text-emerald-200">
+              The 12-Month Average Daily Wage (ADW) is calculated by dividing <strong>Total Wages</strong> by <strong>Total Days</strong> over the past year.
+              Critically, periods where the employee was not paid their full wages (e.g., statutory holidays, sickness allowance at 4/5) are <strong>excluded</strong> from both the numerator and denominator to protect the employee's average.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -371,9 +401,12 @@ const ADWTab: React.FC<{ employees: Employee[], history: PayrollRecord[] }> = ({
 const DisregardedTab: React.FC<{ 
   disregarded: DisregardedPeriod[], 
   employees: Employee[],
-  onAdd: (d: Omit<DisregardedPeriod, 'id'>) => void 
-}> = ({ disregarded, employees, onAdd }) => {
+  onAdd: (d: Omit<DisregardedPeriod, 'id'>) => void,
+  onEdit: (d: DisregardedPeriod) => void,
+  onDelete: (id: string) => void
+}> = ({ disregarded, employees, onAdd, onEdit, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<DisregardedPeriod>>({
     employeeId: employees[0].id,
     month: '2025-11',
@@ -382,9 +415,37 @@ const DisregardedTab: React.FC<{
     payRule: '4/5'
   });
 
+  const handleOpenAdd = () => {
+    setEditingId(null);
+    setForm({
+      employeeId: employees[0].id,
+      month: '2025-11',
+      reason: 'Sickness',
+      days: 1,
+      payRule: '4/5'
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (period: DisregardedPeriod) => {
+    setEditingId(period.id);
+    setForm({
+      employeeId: period.employeeId,
+      month: period.month,
+      reason: period.reason,
+      days: period.days,
+      payRule: period.payRule
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = () => {
     if(form.employeeId && form.month && form.reason && form.days && form.payRule) {
-      onAdd(form as Omit<DisregardedPeriod, 'id'>);
+      if (editingId) {
+        onEdit({ ...form, id: editingId } as DisregardedPeriod);
+      } else {
+        onAdd(form as Omit<DisregardedPeriod, 'id'>);
+      }
       setIsModalOpen(false);
     }
   };
@@ -394,11 +455,24 @@ const DisregardedTab: React.FC<{
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-slate-800 dark:text-white">Disregarded Periods Audit Log</h2>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleOpenAdd}
           className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors text-sm font-medium shadow-sm"
         >
           <PlusCircle size={16} /> Add Period
         </button>
+      </div>
+
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md border border-yellow-200 dark:border-yellow-800 text-sm">
+        <div className="flex items-start gap-2">
+          <Info className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+          <div className="space-y-1">
+            <h4 className="font-bold text-yellow-900 dark:text-yellow-100">Disregarded Events & 713 Compliance</h4>
+            <p className="text-xs text-yellow-800 dark:text-yellow-200">
+              Events listed here (e.g. Maternity Leave, Sickness Allowance) trigger the "Disregarded" flag.
+              Both the <strong>period (days)</strong> and the <strong>pay</strong> are excluded from the 12-month Average Daily Wage (ADW) calculation to prevent lowering the employee's statutory average rate.
+            </p>
+          </div>
+        </div>
       </div>
       
       <div className="bg-white dark:bg-slate-800 shadow rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -410,6 +484,7 @@ const DisregardedTab: React.FC<{
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Reason</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Days</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Pay Rule</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Actions</th>
              </tr>
           </thead>
           <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
@@ -432,6 +507,20 @@ const DisregardedTab: React.FC<{
                    </td>
                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{d.days}</td>
                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{d.payRule}</td>
+                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                     <div className="flex items-center justify-end gap-2">
+                       <button 
+                        onClick={() => handleOpenEdit(d)}
+                        className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors" title="Edit">
+                         <Edit size={16} />
+                       </button>
+                       <button 
+                        onClick={() => onDelete(d.id)}
+                        className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete">
+                         <Trash2 size={16} />
+                       </button>
+                     </div>
+                   </td>
                  </tr>
                );
             })}
@@ -443,7 +532,7 @@ const DisregardedTab: React.FC<{
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-fade-in-up border border-slate-200 dark:border-slate-700">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Add Disregarded Period</h3>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{editingId ? 'Edit Disregarded Period' : 'Add Disregarded Period'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={20}/></button>
             </div>
             <div className="space-y-4">
@@ -509,7 +598,7 @@ const DisregardedTab: React.FC<{
                 onClick={handleSubmit}
                 className="w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition-colors font-medium mt-2 shadow-sm"
               >
-                Confirm & Update Payroll
+                {editingId ? 'Update Period' : 'Confirm & Update Payroll'}
               </button>
             </div>
           </div>
@@ -538,6 +627,35 @@ const MPFTab: React.FC<{ employees: Employee[], history: PayrollRecord[] }> = ({
              <option key={m} value={m}>{m}</option>
            ))}
         </select>
+      </div>
+
+      <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-md border border-indigo-200 dark:border-indigo-800 text-sm">
+        <div className="flex items-start gap-2">
+          <Info className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" />
+          <div className="space-y-2">
+            <h4 className="font-bold text-indigo-900 dark:text-indigo-100">MPF Calculation Logic & Voluntary Contributions</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-indigo-800 dark:text-indigo-200 text-xs">
+              <div>
+                 <p className="font-bold mb-1 uppercase tracking-wide text-indigo-700 dark:text-indigo-300">Master Trust (Monthly)</p>
+                 <ul className="list-disc pl-4 space-y-1 leading-relaxed">
+                   <li><strong>Mandatory (ER/EE):</strong> 5% of Relevant Income.</li>
+                   <li><strong>Caps:</strong> Max contribution $1,500/mth (Income ≥ $30,000).</li>
+                   <li><strong>Exemption:</strong> EE contribution is $0 if Income &lt; $7,100.</li>
+                   <li><strong>Voluntary:</strong> Additional % defined in Employee Profile (e.g., +5%).</li>
+                 </ul>
+              </div>
+              <div>
+                 <p className="font-bold mb-1 uppercase tracking-wide text-indigo-700 dark:text-indigo-300">Industry Scheme (Casual)</p>
+                 <ul className="list-disc pl-4 space-y-1 leading-relaxed">
+                   <li><strong>Scale-based:</strong> Fixed daily amounts based on income bands.</li>
+                   <li>e.g., Daily Inc &lt; $280: ER $10 / EE $0.</li>
+                   <li>e.g., Daily Inc $280-$349: ER $10 / EE $10.</li>
+                   <li><strong>Voluntary:</strong> Calculated as fixed % on top of scale amounts.</li>
+                 </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-slate-800 shadow rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -629,6 +747,21 @@ const SalaryReportTab: React.FC<{ employees: Employee[], history: PayrollRecord[
            </div>
         </div>
       </div>
+
+      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-800 text-sm">
+        <div className="flex items-start gap-2">
+          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <div className="space-y-2">
+            <h4 className="font-bold text-blue-900 dark:text-blue-100">Net Pay Calculation Formula</h4>
+            <p className="font-mono text-xs bg-white dark:bg-slate-900/50 px-2 py-1 rounded border border-blue-100 dark:border-blue-800 inline-block text-blue-800 dark:text-blue-200">
+              Net Pay = Gross Pay - MPF (Mandatory) - MPF (Voluntary)
+            </p>
+            <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+              <strong>713 Ordinance Note:</strong> Portions of Gross Pay (e.g., Sickness Allowance paid at 4/5) flagged as <span className="text-orange-600 dark:text-orange-400 font-medium">Disregarded Pay</span> are to be <strong>excluded</strong> from future Average Daily Wage (ADW) calculations. These amounts are <strong>already included</strong> in the Gross Pay figure and are taxable/MPF-relevant; they are NOT deducted from the Net Pay.
+            </p>
+          </div>
+        </div>
+      </div>
       
       <div className="bg-white dark:bg-slate-800 shadow rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
@@ -677,8 +810,8 @@ const IR56BTab: React.FC<{ employees: Employee[], history: PayrollRecord[] }> = 
           Generated XML adheres to IRD specific formatting, including Employee Header blocks, Income Particulars (Code A), and simplified Particulars of Income. Date format: YYYYMMDD.
         </p>
       </div>
-      <div className="relative flex-1 bg-slate-900 rounded-lg overflow-hidden shadow-inner border border-slate-700">
-        <pre className="p-4 text-xs text-green-400 font-mono overflow-auto h-[500px]">
+      <div className="relative bg-slate-900 rounded-lg overflow-hidden shadow-inner border border-slate-700">
+        <pre className="p-4 text-xs text-green-400 font-mono overflow-auto h-auto max-h-[calc(100vh-250px)]">
           {xml}
         </pre>
         <button 
@@ -693,6 +826,39 @@ const IR56BTab: React.FC<{ employees: Employee[], history: PayrollRecord[] }> = 
 };
 
 // --- Main App Component ---
+
+// Helper for MPF calculation to be reused
+const calculateMPF = (scheme: MPFScheme, gross: number, days: number = 30) => {
+  let erMandatory = 0;
+  let eeMandatory = 0;
+
+  if (scheme === MPFScheme.MasterTrust) {
+     if (gross > 30000) {
+        eeMandatory = 1500;
+        erMandatory = 1500;
+     } else if (gross < 7100) {
+        eeMandatory = 0;
+        erMandatory = gross * 0.05;
+     } else {
+        eeMandatory = gross * 0.05;
+        erMandatory = gross * 0.05;
+     }
+  } else {
+      // Simplified Industry Scheme Band Logic
+      const dailyAvg = gross / (days || 1);
+      let erDaily = 0;
+      let eeDaily = 0;
+      
+      if (dailyAvg < 280) { erDaily = 10; eeDaily = 0; }
+      else if (dailyAvg < 350) { erDaily = 10; eeDaily = 10; }
+      else if (dailyAvg < 650) { erDaily = 20; eeDaily = 20; }
+      else { erDaily = Math.min(50, dailyAvg * 0.05); eeDaily = Math.min(50, dailyAvg * 0.05); }
+
+      erMandatory = erDaily * days;
+      eeMandatory = eeDaily * days;
+  }
+  return { erMandatory, eeMandatory };
+};
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -717,6 +883,33 @@ const App: React.FC = () => {
     }, 800);
   };
 
+  const recalculatePayrollRecord = (
+    rec: PayrollRecord, 
+    emp: Employee, 
+    newGross: number, 
+    isDisregarded: boolean, 
+    disregardedReason?: string, 
+    disregardedDays: number = 0, 
+    disregardedPay: number = 0
+  ): PayrollRecord => {
+    const { erMandatory, eeMandatory } = calculateMPF(emp.mpfScheme, newGross, rec.totalDays);
+    const eeVoluntary = newGross * (emp.voluntaryContributionRate / 100);
+
+    return {
+      ...rec,
+      isDisregarded,
+      disregardedReason,
+      disregardedDays,
+      disregardedPay,
+      grossPay: Math.round(newGross),
+      mpfRelevantIncome: Math.round(newGross),
+      mpfEmployerMandatory: Math.round(erMandatory),
+      mpfEmployeeMandatory: Math.round(eeMandatory),
+      mpfEmployeeVoluntary: Math.round(eeVoluntary),
+      netPay: Math.round(newGross - eeMandatory - eeVoluntary)
+    };
+  };
+
   const handleAddDisregarded = (newPeriod: Omit<DisregardedPeriod, 'id'>) => {
     setLoading(true);
     setTimeout(() => {
@@ -726,20 +919,96 @@ const App: React.FC = () => {
 
       setHistory(prev => prev.map(rec => {
         if (rec.employeeId === newPeriod.employeeId && rec.period === newPeriod.month) {
-          let newGross = rec.grossPay;
-          if (newPeriod.payRule === '4/5') newGross = rec.grossPay * 0.8;
-          if (newPeriod.payRule === 'No Pay') newGross = 0;
+          const emp = employees.find(e => e.id === rec.employeeId);
+          if (!emp) return rec;
 
-          return {
-            ...rec,
-            isDisregarded: true,
-            disregardedReason: newPeriod.reason,
-            disregardedDays: newPeriod.days,
-            disregardedPay: newPeriod.payRule === 'No Pay' ? 0 : (newPeriod.payRule === '4/5' ? newGross : rec.grossPay),
-            grossPay: newGross,
-            mpfRelevantIncome: newGross,
-            netPay: newGross - rec.mpfEmployeeMandatory - rec.mpfEmployeeVoluntary
-          };
+          // Determine proportional pay
+          const totalDays = rec.totalDays; // Assuming 30 for Monthly, or work days for Casual
+          // For casual, baseRate is daily. For monthly, it's monthly.
+          const dailyRate = emp.paymentType === PaymentType.Monthly ? (emp.baseRate / 30) : emp.baseRate;
+
+          // Days logic
+          const affectedDays = Math.min(newPeriod.days, totalDays);
+          const normalDays = totalDays - affectedDays;
+          
+          const normalPay = normalDays * dailyRate;
+          let periodPay = 0;
+          
+          if (newPeriod.payRule === '4/5') periodPay = affectedDays * dailyRate * 0.8;
+          else if (newPeriod.payRule === 'Full Pay') periodPay = affectedDays * dailyRate;
+          else if (newPeriod.payRule === 'No Pay') periodPay = 0;
+          
+          const newGross = normalPay + periodPay;
+
+          return recalculatePayrollRecord(
+            rec, emp, newGross, true, newPeriod.reason, affectedDays, periodPay
+          );
+        }
+        return rec;
+      }));
+      setLoading(false);
+    }, 500);
+  };
+
+  const handleEditDisregarded = (updatedPeriod: DisregardedPeriod) => {
+    setLoading(true);
+    setTimeout(() => {
+      // Update disregarded list
+      setDisregarded(prev => prev.map(d => d.id === updatedPeriod.id ? updatedPeriod : d));
+
+      // Update history
+      setHistory(prev => prev.map(rec => {
+        if (rec.employeeId === updatedPeriod.employeeId && rec.period === updatedPeriod.month) {
+          const emp = employees.find(e => e.id === rec.employeeId);
+          if (!emp) return rec;
+
+          // Re-apply proportional logic (same as Add)
+          const totalDays = rec.totalDays;
+          const dailyRate = emp.paymentType === PaymentType.Monthly ? (emp.baseRate / 30) : emp.baseRate;
+          
+          const affectedDays = Math.min(updatedPeriod.days, totalDays);
+          const normalDays = totalDays - affectedDays;
+          
+          const normalPay = normalDays * dailyRate;
+          let periodPay = 0;
+          
+          if (updatedPeriod.payRule === '4/5') periodPay = affectedDays * dailyRate * 0.8;
+          else if (updatedPeriod.payRule === 'Full Pay') periodPay = affectedDays * dailyRate;
+          else if (updatedPeriod.payRule === 'No Pay') periodPay = 0;
+
+          const newGross = normalPay + periodPay;
+
+          return recalculatePayrollRecord(
+            rec, emp, newGross, true, updatedPeriod.reason, affectedDays, periodPay
+          );
+        }
+        return rec;
+      }));
+      setLoading(false);
+    }, 500);
+  };
+
+  const handleDeleteDisregarded = (id: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      const target = disregarded.find(d => d.id === id);
+      if (!target) { setLoading(false); return; }
+
+      // Remove from list
+      setDisregarded(prev => prev.filter(d => d.id !== id));
+
+      // Restore history to normal
+      setHistory(prev => prev.map(rec => {
+        if (rec.employeeId === target.employeeId && rec.period === target.month) {
+          const emp = employees.find(e => e.id === rec.employeeId);
+          if (!emp) return rec;
+
+          // Restore to full normal pay
+          const normalGross = emp.paymentType === PaymentType.Monthly ? emp.baseRate : (rec.totalDays * emp.baseRate);
+          
+          return recalculatePayrollRecord(
+            rec, emp, normalGross, false, undefined, 0, 0
+          );
         }
         return rec;
       }));
@@ -800,8 +1069,10 @@ const App: React.FC = () => {
             <TabButton active={activeTab === 0} label="Profile" icon={<Users size={16}/>} onClick={() => setActiveTab(0)} />
             <TabButton active={activeTab === 1} label="713 ADW Engine" icon={<Calculator size={16}/>} onClick={() => setActiveTab(1)} />
             <TabButton active={activeTab === 2} label="Disregarded Audit" icon={<AlertTriangle size={16}/>} onClick={() => setActiveTab(2)} />
-            <TabButton active={activeTab === 3} label="MPF Calculator" icon={<PiggyBank size={16}/>} onClick={() => setActiveTab(3)} />
+            {/* SWAPPED ORDER: Salary Report first */}
             <TabButton active={activeTab === 4} label="Salary Report" icon={<FileText size={16}/>} onClick={() => setActiveTab(4)} />
+            {/* SWAPPED ORDER: MPF Calculator second */}
+            <TabButton active={activeTab === 3} label="MPF Calculator" icon={<PiggyBank size={16}/>} onClick={() => setActiveTab(3)} />
             <TabButton active={activeTab === 6} label="Payroll Calendar" icon={<CalendarIcon size={16}/>} onClick={() => setActiveTab(6)} />
             <TabButton active={activeTab === 5} label="IR56B XML" icon={<Code size={16}/>} onClick={() => setActiveTab(5)} />
           </div>
@@ -812,7 +1083,15 @@ const App: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 0 && <ProfileTab employees={employees} />}
         {activeTab === 1 && <ADWTab employees={employees} history={history} />}
-        {activeTab === 2 && <DisregardedTab disregarded={disregarded} employees={employees} onAdd={handleAddDisregarded} />}
+        {activeTab === 2 && (
+          <DisregardedTab 
+            disregarded={disregarded} 
+            employees={employees} 
+            onAdd={handleAddDisregarded} 
+            onEdit={handleEditDisregarded}
+            onDelete={handleDeleteDisregarded}
+          />
+        )}
         {activeTab === 3 && <MPFTab employees={employees} history={history} />}
         {activeTab === 4 && <SalaryReportTab employees={employees} history={history} />}
         {activeTab === 6 && <CalendarTab />}

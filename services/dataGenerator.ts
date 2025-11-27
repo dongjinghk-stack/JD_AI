@@ -1,7 +1,30 @@
 import { Employee, EmployeeRole, PaymentType, MPFScheme, MaritalStatus, PayrollRecord, DisregardedPeriod } from '../types';
 
-const FIRST_NAMES = ["Diana", "Fiona", "Gary", "Mike", "John", "Alice", "Bob", "Charlie", "Eve", "George", "Helen", "Ian", "Jenny", "Kevin", "Lily", "Mark", "Nancy", "Oscar", "Paul", "Queen"];
 const SURNAMES = ["Chan", "Wong", "Lee", "Cheung", "Lau", "Ng", "Ho", "Yeung", "Leung", "Chow"];
+
+// Explicitly define names and genders to ensure profile picture consistency
+const DEFINED_EMPLOYEES = [
+  { firstName: "Diana", gender: "F" },
+  { firstName: "Fiona", gender: "F" },
+  { firstName: "Gary", gender: "M" },
+  { firstName: "Mike", gender: "M" },
+  { firstName: "John", gender: "M" },
+  { firstName: "Alice", gender: "F" },
+  { firstName: "Bob", gender: "M" },
+  { firstName: "Charlie", gender: "M" },
+  { firstName: "Eve", gender: "F" },
+  { firstName: "George", gender: "M" },
+  { firstName: "Helen", gender: "F" },
+  { firstName: "Ian", gender: "M" },
+  { firstName: "Jenny", gender: "F" },
+  { firstName: "Kevin", gender: "M" },
+  { firstName: "Lily", gender: "F" },
+  { firstName: "Mark", gender: "M" },
+  { firstName: "Nancy", gender: "F" },
+  { firstName: "Oscar", gender: "M" },
+  { firstName: "Paul", gender: "M" },
+  { firstName: "Queen", gender: "F" }
+] as const;
 
 const generateHKID = (index: number) => {
   const prefix = String.fromCharCode(65 + (index % 26));
@@ -25,21 +48,25 @@ export const generateEmployees = (): Employee[] => {
   const employees: Employee[] = [];
   
   for (let i = 0; i < 20; i++) {
+    const def = DEFINED_EMPLOYEES[i];
     const isMonthly = i < 10;
+    
+    // Assign Role based on index logic used previously
     const role = isMonthly 
       ? (i < 3 ? EmployeeRole.Manager : EmployeeRole.Chef)
       : (i < 15 ? EmployeeRole.Waiter : EmployeeRole.Cleaner);
     
-    const gender = i % 2 === 0 ? 'M' : 'F';
-    // Using randomuser.me portraits which are gendered and look realistic
-    // Offset index to get variety
+    const gender = def.gender as 'M' | 'F';
     const photoGender = gender === 'M' ? 'men' : 'women';
-    const photoIndex = (i * 3) % 99; 
+    
+    // Deterministic but varied photo index
+    // Using simple offset to get different faces
+    const photoIndex = (i * 7) % 99; 
 
     employees.push({
       id: `EMP${String(i + 1).padStart(3, '0')}`,
       hkid: generateHKID(i),
-      name: `${SURNAMES[i % SURNAMES.length]} ${FIRST_NAMES[i]}`,
+      name: `${SURNAMES[i % SURNAMES.length]} ${def.firstName}`,
       gender: gender,
       maritalStatus: i % 3 === 0 ? MaritalStatus.Single : MaritalStatus.Married,
       role: role,
